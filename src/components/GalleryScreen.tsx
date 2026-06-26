@@ -224,6 +224,18 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
       });
   }, [refreshKey]);
 
+  useEffect(() => {
+    return () => {
+      if (lightboxImage && lightboxImage.startsWith("blob:")) {
+        try {
+          URL.revokeObjectURL(lightboxImage);
+        } catch (e) {
+          console.warn("Failed to revoke object URL:", e);
+        }
+      }
+    };
+  }, [lightboxImage]);
+
   const handleDelete = async (id: string) => {
     try {
       await deleteGalleryItem(id);
@@ -564,23 +576,17 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
 
       const cleanFileName = item.targetWord.replace(/[\\/:*?"<>|]/g, "_");
       if (isMobile) {
-        setLightboxImage(cardUri);
+        // Use the blob URL directly for the preview image to reduce memory usage and avoid blank previews
+        setLightboxImage(downloadUrl);
         setLightboxTitle(`珍藏卡 - ${item.targetWord}`);
-        
-        const link = document.createElement("a");
-        link.download = `Card_${cleanFileName}_${item.score}.png`;
-        link.href = downloadUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        if (tempBlobUrl) {
-          setTimeout(() => URL.revokeObjectURL(tempBlobUrl), 1000);
-        }
+
+        // DO NOT trigger programmatic link.click() download on mobile to prevent the browser's 
+        // download prompt from interrupting the image rendering and showing a blank preview.
 
         if (showToast) {
-          showToast("珍藏卡已生成！如未自动下载，请长按图片保存。", "success");
+          showToast("珍藏卡已生成！请长按图片保存到手机相册。", "success");
         } else {
-          showAlert("已成功生成画作珍藏卡并尝试启动下载！已为您开启大图预览。如果未能自动下载，请长按下方大图并选择「保存图片」保存至本地相册。", "保存卡片", "info");
+          showAlert("已成功生成画作珍藏卡！已为您开启大图预览，请长按下方大图并选择「保存图片」保存至本地相册。", "保存卡片", "info");
         }
       } else {
         const link = document.createElement("a");
