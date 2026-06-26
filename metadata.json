@@ -1,0 +1,6 @@
+{
+        "name": "AI Art Critic",
+        "description": "A visual drawing game where an AI judges your masterpieces.",
+        "requestFramePermissions": [],
+        "majorCapabilities": []
+}
