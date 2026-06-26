@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 
 interface AlertDialogProps {
@@ -116,6 +116,7 @@ interface PromptDialogProps {
   title: string;
   message: string;
   placeholder?: string;
+  defaultValue?: string;
   onConfirm: (val: string) => void;
   onClose: () => void;
   loading?: boolean;
@@ -126,11 +127,18 @@ export function PromptDialog({
   title,
   message,
   placeholder = "",
+  defaultValue = "",
   onConfirm,
   onClose,
   loading = false
 }: PromptDialogProps) {
   const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setInputValue(defaultValue);
+    }
+  }, [isOpen, defaultValue]);
 
   if (!isOpen) return null;
 
@@ -238,6 +246,138 @@ export function ChoiceDialog({
             className="px-4 py-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white font-bold text-black text-xs cursor-pointer min-w-[75px]"
           >
             {cancelText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface EditWordBankDialogProps {
+  isOpen: boolean;
+  theme: string;
+  words: string[];
+  onClose: () => void;
+  onSave: (words: string[]) => void;
+}
+
+export function EditWordBankDialog({
+  isOpen,
+  theme,
+  words,
+  onClose,
+  onSave
+}: EditWordBankDialogProps) {
+  const [localWords, setLocalWords] = useState<string[]>([]);
+  const [newWord, setNewWord] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Populate local words when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setLocalWords([...words]);
+      setNewWord("");
+      setErrorMsg("");
+    }
+  }, [isOpen, words]);
+
+  if (!isOpen) return null;
+
+  const handleDeleteWord = (index: number) => {
+    setLocalWords(prev => prev.filter((_, i) => i !== index));
+    setErrorMsg("");
+  };
+
+  const handleAddWord = () => {
+    const trimmed = newWord.trim();
+    if (!trimmed) return;
+    if (localWords.includes(trimmed)) {
+      setErrorMsg("该词语已存在于词库中！");
+      return;
+    }
+    setLocalWords(prev => [...prev, trimmed]);
+    setNewWord("");
+    setErrorMsg("");
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/30 z-[999999] flex items-center justify-center p-4 select-none">
+      <div className="w-full max-w-sm bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 shadow-lg flex flex-col max-h-[80vh] overflow-hidden">
+        {/* Title Bar */}
+        <div className="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between flex-shrink-0">
+          <span className="font-bold text-xs truncate pr-4">编辑词库 - {theme}</span>
+          <button
+            onClick={onClose}
+            className="w-4 h-4 bg-[#c0c0c0] border border-t-white border-l-white border-b-gray-800 border-r-gray-800 flex items-center justify-center text-black font-bold text-[10px] active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Word input box */}
+        <div className="p-3 border-b border-gray-400 bg-gray-100 flex flex-col gap-1.5 flex-shrink-0">
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={newWord}
+              onChange={(e) => {
+                setNewWord(e.target.value);
+                setErrorMsg("");
+              }}
+              onKeyDown={(e) => { if (e.key === "Enter") handleAddWord(); }}
+              placeholder="输入新词语..."
+              className="flex-grow px-2 py-1 bg-white border-2 border-t-gray-800 border-l-gray-800 border-b-white border-r-white text-black outline-none text-xs"
+            />
+            <button
+              onClick={handleAddWord}
+              className="px-3 py-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white font-bold text-black text-xs cursor-pointer flex-shrink-0"
+            >
+              添加
+            </button>
+          </div>
+          {errorMsg && (
+            <span className="text-red-700 font-bold text-[10px]">{errorMsg}</span>
+          )}
+        </div>
+
+        {/* Words list */}
+        <div className="p-3 overflow-y-auto flex-grow bg-white border-2 border-t-gray-800 border-l-gray-800 border-b-white border-r-white m-3 max-h-[300px]">
+          {localWords.length === 0 ? (
+            <p className="text-gray-500 text-xs italic text-center py-4">词库为空，请添加词语</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {localWords.map((word, index) => (
+                <div
+                  key={index}
+                  className="bg-[#c0c0c0] border border-t-white border-l-white border-b-gray-800 border-r-gray-800 px-2 py-1 text-xs text-black font-bold flex items-center gap-1.5"
+                >
+                  <span>{word}</span>
+                  <button
+                    onClick={() => handleDeleteWord(index)}
+                    className="text-red-700 font-extrabold hover:text-red-900 cursor-pointer text-[10px]"
+                    title="删除此词"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="px-4 pb-4 flex justify-end gap-2 flex-shrink-0">
+          <button
+            onClick={() => onSave(localWords)}
+            className="px-4 py-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white font-bold text-black text-xs cursor-pointer min-w-[75px]"
+          >
+            保存
+          </button>
+          <button
+            onClick={onClose}
+            className="px-4 py-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white font-bold text-black text-xs cursor-pointer min-w-[75px]"
+          >
+            取消
           </button>
         </div>
       </div>

@@ -1,0 +1,105 @@
+import type { WindowState } from "../types/app";
+
+export const INITIAL_WINDOWS: WindowState[] = [
+  {
+    id: "drawing",
+    title: "傲慢的评论家.exe",
+    icon: "dinkie-icons:artist-palette",
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    zIndex: 10,
+    x: 40,
+    y: 40,
+    width: 720,
+    height: 600,
+  },
+  {
+    id: "gallery",
+    title: "画廊陈列室.exe",
+    icon: "dinkie-icons:floppy-disk-filled",
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    zIndex: 10,
+    x: 100,
+    y: 70,
+    width: 720,
+    height: 540,
+  },
+  {
+    id: "settings",
+    title: "控制面板.lnk",
+    icon: "dinkie-icons:gear",
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    zIndex: 10,
+    x: 180,
+    y: 100,
+    width: 440,
+    height: 480,
+  },
+  {
+    id: "help",
+    title: "帮助.txt",
+    icon: "dinkie-icons:speech-balloon-question",
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    zIndex: 10,
+    x: 220,
+    y: 120,
+    width: 500,
+    height: 450,
+  },
+  {
+    id: "changelog",
+    title: "更新日志.txt",
+    icon: "dinkie-icons:page-curl",
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    zIndex: 10,
+    x: 260,
+    y: 140,
+    width: 500,
+    height: 450,
+  },
+];
+
+export const DESKTOP_ICONS = [
+  {
+    id: "drawing",
+    title: "傲慢的评论家.exe",
+    icon: "streamline-pixel:design-color-brush-paint",
+  },
+  {
+    id: "gallery",
+    title: "画廊陈列室.exe",
+    icon: "streamline-pixel:design-drawing-board",
+  },
+  {
+    id: "settings",
+    title: "控制面板.lnk",
+    icon: "streamline-pixel:interface-essential-setting-cog",
+  },
+  {
+    id: "help",
+    title: "帮助.txt",
+    icon: "streamline-pixel:interface-essential-question-help-circle-2",
+  },
+  {
+    id: "changelog",
+    title: "更新日志.txt",
+    icon: "streamline-pixel:content-files-note",
+  },
+];
+
+export const START_MENU_ITEMS = [
+  { id: "drawing", title: "傲慢的评论家.exe", icon: "dinkie-icons:artist-palette" },
+  { id: "gallery", title: "画廊陈列室.exe", icon: "dinkie-icons:floppy-disk-filled" },
+  { id: "settings", title: "控制面板.lnk", icon: "dinkie-icons:gear" },
+  { id: "help", title: "帮助.txt", icon: "dinkie-icons:speech-balloon-question" },
+  { id: "changelog", title: "更新日志.txt", icon: "dinkie-icons:page-curl" },
+];

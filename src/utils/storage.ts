@@ -8,6 +8,16 @@ export interface GalleryItem {
   date: number;
 }
 
+export interface LLMApiPreset {
+  id: string;
+  name: string;
+  provider: "openrouter" | "custom";
+  apiUrl: string;
+  apiKey: string;
+  selectedModel: string;
+  models: string[];
+}
+
 export interface LLMSettings {
   provider: "openrouter" | "custom";
   apiUrl: string;
@@ -20,6 +30,9 @@ export interface LLMSettings {
   customWords?: string[];
   customStats?: Record<string, { height: string; weight: string }>;
   durationLimit?: number;
+  username?: string;
+  apiPresets?: LLMApiPreset[];
+  activePresetId?: string;
 }
 
 const DB_NAME = "AI_Art_Critic_DB";

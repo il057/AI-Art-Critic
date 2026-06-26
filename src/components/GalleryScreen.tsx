@@ -457,12 +457,59 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
       ctx.fillStyle = "#555555";
       ctx.font = "8px 'Unifont', monospace";
       ctx.textAlign = "left";
-      ctx.fillText("Illus. 您的画笔", 12, 308);
+      const illustratorName = settings?.username ? settings.username : "您的画笔";
+      ctx.fillText(`Illus. ${illustratorName}`, 12, 308);
       ctx.textAlign = "center";
       ctx.fillText(`${editionLabel}`, 200, 308);
       ctx.textAlign = "right";
-      ctx.fillText("v1.2.0", 388, 308);
+      ctx.fillText("v1.3.0", 388, 308);
       ctx.textAlign = "left"; // Reset alignment to left
+
+      // Helper function to draw classic retro 3D bevel rect border (recessed style)
+      const drawBevelRect = (
+        c: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        colorTopLeftOuter: string,
+        colorTopLeftInner: string,
+        colorBottomRightInner: string,
+        colorBottomRightOuter: string
+      ) => {
+        c.lineWidth = 1;
+        // Top & Left Outer
+        c.strokeStyle = colorTopLeftOuter;
+        c.beginPath();
+        c.moveTo(x, y + h - 1);
+        c.lineTo(x, y);
+        c.lineTo(x + w - 1, y);
+        c.stroke();
+        
+        // Top & Left Inner
+        c.strokeStyle = colorTopLeftInner;
+        c.beginPath();
+        c.moveTo(x + 1, y + h - 2);
+        c.lineTo(x + 1, y + 1);
+        c.lineTo(x + w - 2, y + 1);
+        c.stroke();
+        
+        // Bottom & Right Inner
+        c.strokeStyle = colorBottomRightInner;
+        c.beginPath();
+        c.moveTo(x + 1, y + h - 2);
+        c.lineTo(x + w - 2, y + h - 2);
+        c.lineTo(x + w - 2, y + 1);
+        c.stroke();
+        
+        // Bottom & Right Outer
+        c.strokeStyle = colorBottomRightOuter;
+        c.beginPath();
+        c.moveTo(x, y + h - 1);
+        c.lineTo(x + w - 1, y + h - 1);
+        c.lineTo(x + w - 1, y);
+        c.stroke();
+      };
 
       // 6. Abilities Box
       const boxX = 12;
@@ -470,14 +517,50 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
       const boxW = 376;
       const boxH = 178;
 
-      ctx.fillStyle = boxBg;
+      let tlOuter = "#808080";
+      let tlInner = "#000000";
+      let brInner = "#dfdfdf";
+      let brOuter = "#ffffff";
+
+      if (item.score >= 90) {
+        // SSR Gold gradient and custom bevel
+        const grad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
+        grad.addColorStop(0, "#ffe8a0");
+        grad.addColorStop(0.5, "#fffdf5");
+        grad.addColorStop(1, "#ffd700");
+        ctx.fillStyle = grad;
+        tlOuter = "#b8860b";
+        tlInner = "#5c4008";
+        brInner = "#ffe8a0";
+        brOuter = "#ffd700";
+      } else if (item.score >= 80) {
+        // SR Gold/Bronze gradient and custom bevel
+        const grad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
+        grad.addColorStop(0, "#faf6eb");
+        grad.addColorStop(0.5, "#fff6e0");
+        grad.addColorStop(1, "#e8c97f");
+        ctx.fillStyle = grad;
+        tlOuter = "#a08040";
+        tlInner = "#4a3a1a";
+        brInner = "#f0e0b0";
+        brOuter = "#c5a059";
+      } else if (item.score >= 50) {
+        // R Silver-Blue gradient and custom bevel
+        const grad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
+        grad.addColorStop(0, "#f5fafe");
+        grad.addColorStop(0.5, "#e6f2ff");
+        grad.addColorStop(1, "#b0c4de");
+        ctx.fillStyle = grad;
+        tlOuter = "#708090";
+        tlInner = "#2f4f4f";
+        brInner = "#e6f2ff";
+        brOuter = "#b0c4de";
+      } else {
+        ctx.fillStyle = boxBg;
+      }
+
       ctx.fillRect(boxX, boxY, boxW, boxH);
-      
-      ctx.strokeStyle = "#808080";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(boxX, boxY, boxW, boxH);
-      ctx.strokeStyle = "#000000";
-      ctx.strokeRect(boxX + 1, boxY + 1, boxW - 2, boxH - 2);
+      drawBevelRect(ctx, boxX, boxY, boxW, boxH, tlOuter, tlInner, brInner, brOuter);
 
       // Helper to draw a pixel-art badge icon next to titles
       const drawBadgeIcon = (c: CanvasRenderingContext2D, cx: number, cy: number, type: "guess" | "critique") => {
@@ -551,6 +634,17 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
       const critiqueLineHeight = fontSize + 4;
       const maxDrawY = boxY + boxH - 12;
       wrapTextAndReturnY(ctx, item.critique, boxX + textIndent, critiqueTextY, maxWidth, critiqueLineHeight, maxDrawY);
+
+      // Draw pixel sparkles inside the abilities box for SSR/SR
+      if (item.score >= 90) {
+        drawPixelSparkle(ctx, boxX + boxW - 20, boxY + 15, "#ffd700");
+        drawPixelSparkle(ctx, boxX + 15, boxY + boxH - 15, "#ffd700");
+        drawPixelSparkle(ctx, boxX + boxW - 15, dividerY + 5, "#ffd700");
+        drawPixelSparkle(ctx, boxX + 120, boxY + 8, "#ffd700");
+      } else if (item.score >= 80) {
+        drawPixelSparkle(ctx, boxX + boxW - 20, boxY + 15, "#e8c97f");
+        drawPixelSparkle(ctx, boxX + 15, boxY + boxH - 15, "#e8c97f");
+      }
 
       // 7. Footer
       ctx.fillStyle = "#555555";
@@ -730,7 +824,7 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
                     className="px-2 py-0.5 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white text-[#800000] font-bold text-[10px] flex items-center gap-1 cursor-pointer"
                     title="删除画作"
                   >
-                    <Icon icon="streamline-pixel:interface-essential-bin" className="w-3.5 h-3.5" />
+                    <Icon icon="dinkie-icons:skull" className="w-3.5 h-3.5" />
                     <span>删除</span>
                   </button>
                 </div>

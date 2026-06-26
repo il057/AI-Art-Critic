@@ -17,13 +17,17 @@ interface ResultScreenProps {
   showToast?: (message: string, type?: "success" | "info" | "error") => void;
   isSaved: boolean;
   onSaveSuccess: () => void;
+  onOpenGallery?: () => void;
 }
 
-export function ResultScreen({ result, targetWord, image, onPlayAgain, onRetry, showAlert, showToast, isSaved, onSaveSuccess }: ResultScreenProps) {
+export function ResultScreen({ result, targetWord, image, onPlayAgain, onRetry, showAlert, showToast, isSaved, onSaveSuccess, onOpenGallery }: ResultScreenProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const handleSave = async () => {
-    if (isSaved) return;
+    if (isSaved) {
+      if (onOpenGallery) onOpenGallery();
+      return;
+    }
     try {
       await saveToGallery({
         image,
@@ -117,15 +121,10 @@ export function ResultScreen({ result, targetWord, image, onPlayAgain, onRetry, 
         ) : (
           <button
             onClick={handleSave}
-            disabled={isSaved}
-            className={`w-full sm:w-auto px-6 py-2 border-2 font-bold text-sm flex items-center justify-center gap-2 ${
-              isSaved 
-                ? 'bg-gray-300 text-gray-500 border-t-gray-800 border-l-gray-800 border-b-white border-r-white cursor-not-allowed' 
-                : 'bg-[#c0c0c0] text-black border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white cursor-pointer'
-            }`}
+            className="w-full sm:w-auto px-6 py-2 bg-[#c0c0c0] text-black border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Icon icon="dinkie-icons:floppy-disk" className="w-4 h-4" />
-            {isSaved ? "已保存到画廊" : "保存到画廊"}
+            <Icon icon={isSaved ? "dinkie-icons:clapper-board" : "dinkie-icons:floppy-disk"} className="w-4 h-4" />
+            {isSaved ? "打开画廊" : "保存到画廊"}
           </button>
         )}
         <button

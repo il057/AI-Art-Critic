@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 
 interface DrawingBoardProps {
+  key?: React.Key;
   targetWord: string;
   timeLeft: number;
-  onSubmit: (base64Image: string) => void;
+  onSubmit: (base64Image: string, isTimeout?: boolean) => void | Promise<void>;
   onTimeout?: (base64Image: string) => void;
 }
+
 
 export function DrawingBoard({ targetWord, timeLeft, onSubmit, onTimeout }: DrawingBoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
