@@ -33,6 +33,10 @@ export interface LLMSettings {
   username?: string;
   apiPresets?: LLMApiPreset[];
   activePresetId?: string;
+  // Display Properties / 个性设置
+  wallpaper?: string; // filename, e.g. "clouds_win95.png" or "" for solid color
+  wallpaperFit?: "center" | "stretch" | "tile";
+  crtFilter?: "none" | "light" | "medium" | "heavy";
 }
 
 const DB_NAME = "AI_Art_Critic_DB";

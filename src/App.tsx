@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { DrawingBoard } from "./components/DrawingBoard";
 import { ResultScreen } from "./components/ResultScreen";
 import { GalleryScreen } from "./components/GalleryScreen";
@@ -26,6 +26,8 @@ import { HELP_CONTENT_TEXT, CHANGELOG_CONTENT_TEXT } from "./constants/content";
 import { callJudgeAPI } from "./services/judgeService";
 import { generateCustomWords } from "./services/wordBankService";
 import { NotepadWindow } from "./components/NotepadWindow";
+import { DisplayPropertiesWindow } from "./components/DisplayPropertiesWindow";
+import type { DisplaySettings } from "./components/DisplayPropertiesWindow";
 
 export default function App() {
   // Desktop Windows State with retro Win95 names
@@ -85,6 +87,11 @@ export default function App() {
   const [timeoutImage, setTimeoutImage] = useState<string>("");
   const [isLastTimeout, setIsLastTimeout] = useState<boolean>(false);
 
+  // Display Properties state
+  const [wallpaper, setWallpaper] = useState<string>("");
+  const [wallpaperFit, setWallpaperFit] = useState<"center" | "stretch" | "tile">("stretch");
+  const [crtFilter, setCrtFilter] = useState<"none" | "light" | "medium" | "heavy">("none");
+
   // Load settings on mount
   useEffect(() => {
     getSettings().then((saved) => {
@@ -94,6 +101,9 @@ export default function App() {
         if (saved.customTheme) setCustomTheme(saved.customTheme);
         if (saved.customWords) setCustomWords(saved.customWords);
         if (saved.durationLimit !== undefined) setDurationLimit(saved.durationLimit);
+        if (saved.wallpaper !== undefined) setWallpaper(saved.wallpaper);
+        if (saved.wallpaperFit) setWallpaperFit(saved.wallpaperFit);
+        if (saved.crtFilter) setCrtFilter(saved.crtFilter);
       }
     });
   }, []);
@@ -530,9 +540,66 @@ export default function App() {
     );
   };
 
+  // Build desktop background style from wallpaper settings
+  const getDesktopStyle = (): React.CSSProperties => {
+    if (!wallpaper) return { backgroundColor: "#008080" };
+    const url = `/wallpapers/${wallpaper}`;
+    switch (wallpaperFit) {
+      case "stretch":
+        return { backgroundImage: `url(${url})`, backgroundSize: "100% 100%", backgroundRepeat: "no-repeat", backgroundPosition: "center" };
+      case "tile":
+        return { backgroundImage: `url(${url})`, backgroundRepeat: "repeat", backgroundSize: "auto" };
+      case "center":
+      default:
+        return { backgroundImage: `url(${url})`, backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center", backgroundColor: "#008080" };
+    }
+  };
+
+  // CRT filter overlay styles
+  const getCrtOverlayStyle = (): React.CSSProperties | null => {
+    if (crtFilter === "none") return null;
+    const configs = {
+      light: { scanlineOpacity: 0.04, vignetteOpacity: 0.15, hue: 0 },
+      medium: { scanlineOpacity: 0.08, vignetteOpacity: 0.3, hue: 8 },
+      heavy: { scanlineOpacity: 0.14, vignetteOpacity: 0.45, hue: 15 },
+    };
+    const cfg = configs[crtFilter];
+    return {
+      position: "fixed",
+      inset: 0,
+      zIndex: 99998,
+      pointerEvents: "none",
+      backgroundImage: `
+        repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,${cfg.scanlineOpacity}) 0px,
+          rgba(0,0,0,${cfg.scanlineOpacity}) 1px,
+          transparent 1px,
+          transparent 3px
+        ),
+        radial-gradient(
+          ellipse at center,
+          transparent 60%,
+          rgba(0,0,0,${cfg.vignetteOpacity}) 100%
+        )
+      `,
+      mixBlendMode: crtFilter === "heavy" ? "multiply" : "normal",
+      filter: cfg.hue > 0 ? `hue-rotate(${cfg.hue}deg) saturate(1.1)` : undefined,
+    };
+  };
+
+  const handleDisplaySettingsChanged = (settings: DisplaySettings) => {
+    setWallpaper(settings.wallpaper);
+    setWallpaperFit(settings.wallpaperFit);
+    setCrtFilter(settings.crtFilter);
+  };
+
+  const crtOverlayStyle = getCrtOverlayStyle();
+
   return (
     <div
-      className="w-screen h-screen flex flex-col relative select-none overflow-hidden bg-[#008080]"
+      className="w-screen h-screen flex flex-col relative select-none overflow-hidden"
+      style={getDesktopStyle()}
       onMouseDown={() => {
         setSelectedIconId(null);
         setStartMenuOpen(false);
@@ -541,6 +608,8 @@ export default function App() {
         setStartMenuOpen(false);
       }}
     >
+      {/* CRT Monitor Overlay */}
+      {crtOverlayStyle && <div style={crtOverlayStyle} />}
       {/* Desktop Area */}
       <div className="flex-grow w-full relative p-4 min-h-0">
         {/* Desktop Icons column */}
@@ -578,13 +647,14 @@ export default function App() {
                 <Icon
                   icon={icon.icon}
                   className="w-10 h-10 text-white"
+                  style={{ filter: "drop-shadow(1px 1px 2px rgba(0,0,0,0.85)) drop-shadow(-1px -1px 1px rgba(0,0,0,0.4))" }}
                 />
               </div>
               <span
                 className={`mt-1 px-1 py-0.5 text-[11px] text-white break-words max-w-full leading-tight select-none ${
                   selectedIconId === icon.id
                     ? "bg-[#000080] text-white"
-                    : "drop-shadow-[1px_1px_1px_rgba(0,0,0,0.8)]"
+                    : "drop-shadow-[1px_1px_2px_rgba(0,0,0,0.9)]"
                 }`}
               >
                 {icon.title}
@@ -633,6 +703,12 @@ export default function App() {
             )}
             {win.id === "help" && <NotepadWindow content={HELP_CONTENT_TEXT} />}
             {win.id === "changelog" && <NotepadWindow content={CHANGELOG_CONTENT_TEXT} />}
+            {win.id === "display" && (
+              <DisplayPropertiesWindow
+                onSettingsChange={handleDisplaySettingsChanged}
+                showToast={showToast}
+              />
+            )}
           </Window>
         ))}
       </div>
