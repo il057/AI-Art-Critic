@@ -6,6 +6,7 @@ export interface GalleryItem {
   score: number;
   critique: string;
   date: number;
+  wins?: number;
 }
 
 export interface LLMApiPreset {
@@ -37,6 +38,9 @@ export interface LLMSettings {
   wallpaper?: string; // filename, e.g. "clouds_win95.png" or "" for solid color
   wallpaperFit?: "center" | "stretch" | "tile";
   crtFilter?: "none" | "light" | "medium" | "heavy";
+  arenaBackground?: string;
+  arenaWins?: number;
+  arenaMatches?: number;
 }
 
 const DB_NAME = "AI_Art_Critic_DB";
@@ -144,3 +148,16 @@ export async function deleteGalleryItem(id: string): Promise<void> {
     req.onerror = () => reject(req.error);
   });
 }
+
+export async function updateGalleryItem(item: GalleryItem): Promise<void> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(GALLERY_STORE, "readwrite");
+    const store = tx.objectStore(GALLERY_STORE);
+    const req = store.put(item);
+
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+

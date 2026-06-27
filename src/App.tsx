@@ -28,6 +28,7 @@ import { generateCustomWords } from "./services/wordBankService";
 import { NotepadWindow } from "./components/NotepadWindow";
 import { DisplayPropertiesWindow } from "./components/DisplayPropertiesWindow";
 import type { DisplaySettings } from "./components/DisplayPropertiesWindow";
+import { BattleArena } from "./components/BattleArena";
 
 export default function App() {
   // Desktop Windows State with retro Win95 names
@@ -91,6 +92,7 @@ export default function App() {
   const [wallpaper, setWallpaper] = useState<string>("");
   const [wallpaperFit, setWallpaperFit] = useState<"center" | "stretch" | "tile">("stretch");
   const [crtFilter, setCrtFilter] = useState<"none" | "light" | "medium" | "heavy">("none");
+  const [username, setUsername] = useState<string>("");
 
   // Load settings on mount
   useEffect(() => {
@@ -104,6 +106,7 @@ export default function App() {
         if (saved.wallpaper !== undefined) setWallpaper(saved.wallpaper);
         if (saved.wallpaperFit) setWallpaperFit(saved.wallpaperFit);
         if (saved.crtFilter) setCrtFilter(saved.crtFilter);
+        if (saved.username !== undefined) setUsername(saved.username);
       }
     });
   }, []);
@@ -234,6 +237,7 @@ export default function App() {
       if (saved.customTheme) setCustomTheme(saved.customTheme);
       if (saved.customWords) setCustomWords(saved.customWords);
       if (saved.durationLimit !== undefined) setDurationLimit(saved.durationLimit);
+      if (saved.username !== undefined) setUsername(saved.username);
     }
   };
 
@@ -709,6 +713,13 @@ export default function App() {
                 showToast={showToast}
               />
             )}
+            {win.id === "arena" && (
+              <BattleArena
+                showAlert={showAlert}
+                showToast={showToast}
+                onClose={() => closeWindow("arena")}
+              />
+            )}
           </Window>
         ))}
       </div>
@@ -744,13 +755,41 @@ export default function App() {
             ))}
             <div className="h-[2px] border-b border-white border-t border-gray-600 my-1 mx-2" />
             <button
-              onClick={() => {
+              onClick={async () => {
                 setStartMenuOpen(false);
-                showAlert(
-                  `Meowdows 95 \n\n【警告】此程序搭载了极具杀伤力的 AI 毒舌引擎。如果您的画作引起了 AI 胃部不适，本系统概不负责！\n\n【核心玩法】\n- 灵魂画作：使用复古的铅笔、喷壶和油漆桶强行创作。\n- 毒舌审判：AI 评论家将以极其傲慢且荒谬的角度解读您的作品，并在最后打出极其不理智的分数。\n- 传世画廊：将您惨遭蹂躏的画作导出为 Win95 复古明信片进行公开处刑。\n\n珍爱生命，远离毒舌评委。感谢体验！`,
-                  "关于系统",
-                  "info"
-                );
+                const settings = await getSettings();
+                const matches = settings?.arenaMatches || 0;
+                const wins = settings?.arenaWins || 0;
+                const winRateText = matches > 0 ? `${wins} 胜 / ${matches} 场 (胜率 ${Math.round((wins / matches) * 100)}%)` : "暂无战绩";
+
+                const aboutText = `==================================================
+            Meowdows 95 AI 艺术评论系统
+==================================================
+${settings?.username ? `你好，${settings.username}！\n` : ""}
+【角斗场生涯战绩】
+- 决斗成果: ${winRateText}
+
+【核心应用程序】
+1. 傲慢的评论家.exe (Drawing Board & AI Judge)
+   - 核心体验: 还原 Win95 画图的喷笔和油漆桶自由创作。
+   - 毒舌品评: AI 评委用极其刻薄的学术黑话与无厘头笑点对画作进行审判评分。
+
+2. 画廊陈列室.exe (Gallery Screen)
+   - 藏画归档: 保存画作卡片，可一键导出为复古明信片。
+   - 徽章荣誉: 名字后展示星星合成的升段成就徽章：
+     星星 (1胜) / 月亮 (5胜) / 太阳 (25胜) / 皇冠 (125胜)
+
+3. 卡牌角斗场.exe (Battle Arena)
+   - 战局演播: 纯自动卡牌对撞，大模型根据双方笑点自主判定胜负，胜者升级胜场徽章。
+
+【系统说明】
+若您的画作导致 AI 评论家情绪崩溃并给予严厉恶评，开发方概不负责！
+
+Meowdows 95 System v1.4.0
+Powered by DeepMind Pair Programmer
+==================================================`;
+
+                showAlert(aboutText, "关于系统", "info");
               }}
               className="w-full flex items-center gap-2 px-3 py-1.5 text-left text-black hover:bg-[#000080] hover:text-white cursor-pointer group"
             >

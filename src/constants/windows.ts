@@ -79,6 +79,19 @@ export const INITIAL_WINDOWS: WindowState[] = [
     width: 360,
     height: 430,
   },
+  {
+    id: "arena",
+    title: "卡牌角斗场.exe",
+    icon: "dinkie-icons:dagger-knife-filled",
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false,
+    zIndex: 10,
+    x: 80,
+    y: 80,
+    width: 800,
+    height: 580,
+  },
 ];
 
 export const DESKTOP_ICONS = [
@@ -91,6 +104,11 @@ export const DESKTOP_ICONS = [
     id: "gallery",
     title: "画廊陈列室.exe",
     icon: "streamline-pixel:design-drawing-board",
+  },
+  {
+    id: "arena",
+    title: "卡牌角斗场.exe",
+    icon: "streamline-pixel:interface-essential-crown",
   },
   {
     id: "settings",
@@ -118,6 +136,7 @@ export const DESKTOP_ICONS = [
 export const START_MENU_ITEMS = [
   { id: "drawing", title: "傲慢的评论家.exe", icon: "dinkie-icons:artist-palette" },
   { id: "gallery", title: "画廊陈列室.exe", icon: "dinkie-icons:floppy-disk-filled" },
+  { id: "arena", title: "卡牌角斗场.exe", icon: "dinkie-icons:dagger-knife-filled" },
   { id: "settings", title: "控制面板.lnk", icon: "dinkie-icons:gear" },
   { id: "display", title: "显示属性.cpl", icon: "dinkie-icons:desktop-computer" },
   { id: "help", title: "帮助.txt", icon: "dinkie-icons:speech-balloon-question" },
