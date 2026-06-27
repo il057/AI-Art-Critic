@@ -161,3 +161,18 @@ export async function updateGalleryItem(item: GalleryItem): Promise<void> {
   });
 }
 
+export function getAssetUrl(path: string): string {
+  if (!path) return "";
+  if (
+    path.startsWith("data:") ||
+    path.startsWith("http://") ||
+    path.startsWith("https://")
+  ) {
+    return path;
+  }
+  const base = import.meta.env.BASE_URL || "/";
+  const cleanBase = base.endsWith("/") ? base : `${base}/`;
+  const cleanPath = path.startsWith("/") ? path.substring(1) : path;
+  return `${cleanBase}${cleanPath}`;
+}
+

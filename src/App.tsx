@@ -5,7 +5,7 @@ import { GalleryScreen } from "./components/GalleryScreen";
 import { SettingsWindow } from "./components/SettingsWindow";
 import { Window } from "./components/Window";
 import { getRandomWord } from "./utils/words";
-import { getSettings, saveSettings } from "./utils/storage";
+import { getSettings, saveSettings, getAssetUrl } from "./utils/storage";
 import { Icon } from "@iconify/react";
 import { AlertDialog, PromptDialog, ChoiceDialog, EditWordBankDialog } from "./components/Modal";
 import { Dropdown } from "./components/Dropdown";
@@ -547,7 +547,7 @@ export default function App() {
   // Build desktop background style from wallpaper settings
   const getDesktopStyle = (): React.CSSProperties => {
     if (!wallpaper) return { backgroundColor: "#008080" };
-    const url = `/wallpapers/${wallpaper}`;
+    const url = getAssetUrl(`/wallpapers/${wallpaper}`);
     switch (wallpaperFit) {
       case "stretch":
         return { backgroundImage: `url(${url})`, backgroundSize: "100% 100%", backgroundRepeat: "no-repeat", backgroundPosition: "center" };

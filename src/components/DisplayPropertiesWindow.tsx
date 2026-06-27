@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { getSettings, saveSettings } from "../utils/storage";
+import { getSettings, saveSettings, getAssetUrl } from "../utils/storage";
 
 export interface DisplaySettings {
   wallpaper: string;
@@ -14,10 +14,10 @@ interface DisplayPropertiesWindowProps {
 }
 
 const WALLPAPERS = [
-  { id: "teal_solid.jpg", label: "纯色", preview: "/wallpapers/teal_solid.jpg" },
-  { id: "clouds_win95.png", label: "云彩", preview: "/wallpapers/clouds_win95.png" },
-  { id: "windows95_logo.jpg", label: "徽标", preview: "/wallpapers/windows95_logo.jpg" },
-  { id: "bliss_meadow.jpg", label: "草地", preview: "/wallpapers/bliss_meadow.jpg" },
+  { id: "teal_solid.jpg", label: "纯色", preview: getAssetUrl("/wallpapers/teal_solid.jpg") },
+  { id: "clouds_win95.png", label: "云彩", preview: getAssetUrl("/wallpapers/clouds_win95.png") },
+  { id: "windows95_logo.jpg", label: "徽标", preview: getAssetUrl("/wallpapers/windows95_logo.jpg") },
+  { id: "bliss_meadow.jpg", label: "草地", preview: getAssetUrl("/wallpapers/bliss_meadow.jpg") },
 ];
 
 type TabId = "background" | "monitor";

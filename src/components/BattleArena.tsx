@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getSettings, saveSettings, getGalleryItems, GalleryItem, updateGalleryItem } from "../utils/storage";
+import { getSettings, saveSettings, getGalleryItems, GalleryItem, updateGalleryItem, getAssetUrl } from "../utils/storage";
 import { getDeterministicStats, applyVariation, getNumericSeed } from "../utils/cardStats";
 import { Icon } from "@iconify/react";
 import { DrawingBoard } from "./DrawingBoard";
@@ -1060,7 +1060,7 @@ export function BattleArena({ showAlert, showToast, onClose }: BattleArenaProps)
                       className="p-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white text-[10px] flex flex-col items-center gap-1 cursor-pointer hover:bg-[#d0d0d0]"
                     >
                       <div className="w-full h-11 bg-sky-200 overflow-hidden border border-gray-700">
-                        <img src="/wallpapers/clouds_win95.png" alt="蓝天白云" className="w-full h-full object-cover" />
+                        <img src={getAssetUrl("/wallpapers/clouds_win95.png")} alt="蓝天白云" className="w-full h-full object-cover" />
                       </div>
                       <span className="font-mono">蓝天白云.bmp</span>
                     </button>
@@ -1069,7 +1069,7 @@ export function BattleArena({ showAlert, showToast, onClose }: BattleArenaProps)
                       className="p-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white text-[10px] flex flex-col items-center gap-1 cursor-pointer hover:bg-[#d0d0d0]"
                     >
                       <div className="w-full h-11 bg-[#008080] overflow-hidden border border-gray-700">
-                        <img src="/wallpapers/teal_solid.jpg" alt="经典墨绿" className="w-full h-full object-cover" />
+                        <img src={getAssetUrl("/wallpapers/teal_solid.jpg")} alt="经典墨绿" className="w-full h-full object-cover" />
                       </div>
                       <span className="font-mono">经典墨绿.bmp</span>
                     </button>
@@ -1078,7 +1078,7 @@ export function BattleArena({ showAlert, showToast, onClose }: BattleArenaProps)
                       className="p-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white text-[10px] flex flex-col items-center gap-1 cursor-pointer hover:bg-[#d0d0d0]"
                     >
                       <div className="w-full h-11 bg-green-800 overflow-hidden border border-gray-700">
-                        <img src="/wallpapers/bliss_meadow.jpg" alt="经典麦田" className="w-full h-full object-cover" />
+                        <img src={getAssetUrl("/wallpapers/bliss_meadow.jpg")} alt="经典麦田" className="w-full h-full object-cover" />
                       </div>
                       <span className="font-mono">经典麦田.bmp</span>
                     </button>
@@ -1087,7 +1087,7 @@ export function BattleArena({ showAlert, showToast, onClose }: BattleArenaProps)
                       className="p-1 bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-800 border-r-gray-800 active:border-t-gray-800 active:border-l-gray-800 active:border-b-white active:border-r-white text-[10px] flex flex-col items-center gap-1 cursor-pointer hover:bg-[#d0d0d0]"
                     >
                       <div className="w-full h-11 bg-blue-900 overflow-hidden border border-gray-700">
-                        <img src="/wallpapers/windows95_logo.jpg" alt="Win95 徽标" className="w-full h-full object-cover" />
+                        <img src={getAssetUrl("/wallpapers/windows95_logo.jpg")} alt="Win95 徽标" className="w-full h-full object-cover" />
                       </div>
                       <span className="font-mono">系统徽标.bmp</span>
                     </button>
@@ -1200,7 +1200,7 @@ export function BattleArena({ showAlert, showToast, onClose }: BattleArenaProps)
         {(stage === "fighting" || stage === "finished") && playerCard && enemyCard && cardStats && (
           <div
             className="flex-1 flex flex-col min-h-0 relative border-2 border-t-gray-800 border-l-gray-800 border-b-white border-r-white overflow-hidden bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }}
+            style={{ backgroundImage: `url(${getAssetUrl(bgImage)})` }}
           >
             {/* Dark glassmorphic layer for readability */}
             <div className="absolute inset-0 bg-black/30 pointer-events-none" />
