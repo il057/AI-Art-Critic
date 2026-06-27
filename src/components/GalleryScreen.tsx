@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import packageJson from "../../package.json";
 import { getGalleryItems, GalleryItem, deleteGalleryItem, getSettings } from "../utils/storage";
 import { Icon } from "@iconify/react";
 import { Lightbox, ChoiceDialog } from "./Modal";
@@ -462,7 +463,7 @@ export function GalleryScreen({ showAlert, showToast, refreshKey }: GalleryScree
       ctx.textAlign = "center";
       ctx.fillText(`${editionLabel}`, 200, 308);
       ctx.textAlign = "right";
-      ctx.fillText("v1.3.0", 388, 308);
+      ctx.fillText(`v${packageJson.version}`, 388, 308);
       ctx.textAlign = "left"; // Reset alignment to left
 
       // Helper function to draw classic retro 3D bevel rect border (recessed style)
