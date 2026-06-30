@@ -76,9 +76,17 @@ export function DisplayPropertiesWindow({ onSettingsChange, showToast }: Display
 
   const handleApply = async () => {
     const existing = await getSettings();
-    if (!existing) return;
+    const baseSettings =
+      existing ?? {
+        provider: "openrouter" as const,
+        apiUrl: "https://openrouter.ai/api/v1",
+        apiKey: "",
+        selectedModel: "google/gemini-3.5-flash",
+        models: [],
+      };
+
     await saveSettings({
-      ...existing,
+      ...baseSettings,
       wallpaper,
       wallpaperFit,
       crtFilter,
